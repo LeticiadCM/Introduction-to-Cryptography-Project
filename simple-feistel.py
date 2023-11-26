@@ -18,7 +18,7 @@ class Feistel(object):
         Camadas da Cifra
         '''
 
-        new_right = self.funcao_feister(left)
+        new_right = self.funcao_sbox(left)
         #print('DEBUG: Valor da cadeia pós função:'+new_right)
         new_right = self._xor(new_right, round_key)
         #print('DEBUG: Valor da cadeia pós XOR:'+new_right)
@@ -26,23 +26,41 @@ class Feistel(object):
         new_left = right
         return new_left, new_right
 
-    def funcao_feister(self, left):
+    def funcao_sbox(self, left):
         left_list = list(left)
-        for contador in range(len(left_list)):
-            if self.is_primo(contador+1):
-                if left_list[contador] == '0':
-                    left_list[contador] = '1'
-                else:
-                    left_list[contador] = '0'
+        for contador in range(0, len(left_list), 2):
+            c1, c2 = self.sbox_subs(left_list[contador], left_list[contador+1])
+            left_list[contador] = c1
+            left_list[contador + 1] = c2
         return ''.join(left_list)
 
-    def is_primo(self, n):
-        if n < 2:
-            return False
-        for i in range(2, int(n ** 0.5) + 1):
-            if n % i == 0:
-                return False
-        return True
+    def sbox_subs(self, c1, c2):
+        if(c1 == '1' and c2 == '1'):
+            c1 = '0' ; c2 = '1'
+        elif (c1 == '0' and c2 == '1'):
+            c1 = '0' ; c2 = '0'
+        elif (c1 == '1' and c2 == '0'):
+            c1 = '1' ; c2 = '0'
+        else:
+            c1 = '1' ; c2 = '1'
+        return c1, c2
+
+    # 11 -> 01 #
+    # 01 -> 00 #
+    # 10 -> 10 #
+    # 00 -> 11 #
+
+    def sbox_subs_decipher(self, c1, c2):
+        if(c1 == '1' and c2 == '1'):
+            c1 = '0' ; c2 = '0'
+        elif (c1 == '0' and c2 == '1'):
+            c1 = '1' ; c2 = '1'
+        elif (c1 == '1' and c2 == '0'):
+            c1 = '1' ; c2 = '0'
+        else:
+            c1 = '0' ; c2 = '1'
+        return c1, c2
+
 
     def feistel_cipher(self, plain_text, num_rounds, key):
         '''
@@ -80,10 +98,29 @@ class Feistel(object):
 
         for round_num in reversed(range(num_rounds)):  # A mesma coisa, só que na ordem reversa
             round_key = self.generate_round_key(key, round_num)
-            right, left = self.feistel_round(left, right, round_key)
+            left, right = self.feistel_round_decipher(left, right, round_key)
 
-        text = right + left
+        text = left + right
         return text
+
+    def feistel_round_decipher(self, left, right, round_key):
+        '''
+        Camadas da Cifra
+        '''
+
+        new_left = self._xor(right, round_key)
+        new_left = self.funcao_sbox_decipher(new_left)
+
+        new_right = left
+        return new_left, new_right
+
+    def funcao_sbox_decipher(self, left):
+        left_list = list(left)
+        for contador in range(0, len(left_list), 2):
+            c1, c2 = self.sbox_subs_decipher(left_list[contador], left_list[contador+1])
+            left_list[contador] = c1
+            left_list[contador + 1] = c2
+        return ''.join(left_list)
 
 
 feistel = Feistel()
