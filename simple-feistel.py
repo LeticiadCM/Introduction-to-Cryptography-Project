@@ -2,7 +2,6 @@ import hashlib  # Biblioteca utilizada na função generate_round_key https://do
 
 key_block_size = 16
 
-
 class Feistel(object):
     def __init__(self):
         pass
@@ -21,7 +20,7 @@ class Feistel(object):
 
     def feistel_cipher(self, plain_text, num_rounds, key):
         '''
-        [b'1010101010101010', 0, 128]
+        [b'1010101010101010', 0, 16]
         Encriptar
         '''
 
@@ -37,32 +36,18 @@ class Feistel(object):
 
     def generate_round_key(self, master_key, n_rounds, key_block_size):
 
+        # O bloco é dividido em duas partes iguais e cada parte é processada separadamente em cada rodada.
         half_block_size = key_block_size // 2
 
-        # Gera um sub_chave com metade do tamanho do bloco para cada rodada
-        # + 2 blocos para comparação
-
+        # A função é aplicada para derivar uma chave estendida (key_data) com base na chave mestra (master_key)
         key_data = hashlib.pbkdf2_hmac('sha256', master_key, b'Teste', 500, dklen=(4 + n_rounds) * half_block_size)
 
-        # Creio que não seja necessário retornar a prekey e postkey, apenas para debugar
-
-        # [Original: 64] [R x Sub-chaves: 32] [Nova chave: 64]
-        # keys = {
-        #     "prekey" : key_data[0:key_block_size],
-        #     "roundkeys" : [key_data[key_block_size + (half_block_size * a): key_block_size + half_block_size + (half_block_size * a)] for a in range(n_rounds)],
-        #     "postkey" : key_data[-key_block_size:],
-        # }
-
-        # Pelo que entendi, basta rodar a função apenas uma vez,
-        # no final da linha há um for para gerar todas as rodadas
+        #  Cria uma lista de subchaves para cada rodada
         roundkeys = [
             key_data[key_block_size + (half_block_size * a): key_block_size + half_block_size + (half_block_size * a)]
             for a in range(n_rounds)]
+        
         return roundkeys
-
-        '''
-        Geração da Chave
-        '''
 
     def feistel_decipher(self, cipher_text, num_rounds, key):
         '''
@@ -78,7 +63,6 @@ class Feistel(object):
 
         text = right + left
         return text
-
 
 feistel = Feistel()
 
