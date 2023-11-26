@@ -1,6 +1,6 @@
 import hashlib  # Biblioteca utilizada na função generate_round_key https://docs.python.org/3/library/hashlib.html
 
-key_block_size = 128
+key_block_size = 16
 
 
 class Feistel(object):
