@@ -9,7 +9,7 @@ class Feistel(object):
         pass
 
     def _xor(self, a, b):
-        return ''.join(str(int(x) ^ int(y)) for x, y in zip(a, b))
+        return ''.join(str((int(x) + int(y)) % 2) for x, y in zip(a, b))
 
     def feistel_round(self, left, right, round_key):
         '''
