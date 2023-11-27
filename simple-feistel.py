@@ -2,8 +2,6 @@
 
 import hashlib  # Biblioteca utilizada na função generate_round_key https://docs.python.org/3/library/hashlib.html
 
-key_block_size = 64
-
 class Feistel(object):
     def __init__(self):
         pass
@@ -136,6 +134,7 @@ feistel = Feistel()
 text       = "0101100111001101010011100111101001011110011100101011101000110011"  # Entrada
 master_key = b'1100010001011011010110011101001001111001010100010000101001110001'  # Chave
 n_rounds = 3
+key_block_size = 64
 
 cipher_text = feistel.feistel_cipher(text, n_rounds, master_key)
 print("Texto cifrado:\t\t", cipher_text)
