@@ -9,7 +9,7 @@ class Feistel(object):
     def _xor(self, a, b):
         return ''.join(str((int(x) + int(y)) % 2) for x, y in zip(a, b))
 
-    def feistel_round(self, left, right, round_key):
+    def feistel_round(self, left, right, round_key): # representa uma rodada do algoritmo de Feistel
         '''
         Camadas da Cifra
         '''
@@ -22,7 +22,7 @@ class Feistel(object):
         new_left = right
         return new_left, new_right
 
-    def funcao_sbox(self, left):
+    def funcao_sbox(self, left): # implementa a função S-Box, que é uma etapa essencial na cifra de Feistel
         left_list = list(left)
         for contador in range(0, len(left_list), 2):
             c1, c2 = self.sbox_subs(left_list[contador], left_list[contador+1])
@@ -30,7 +30,7 @@ class Feistel(object):
             left_list[contador + 1] = c2
         return ''.join(left_list)
 
-    def sbox_subs(self, c1, c2):
+    def sbox_subs(self, c1, c2): # realiza a substituição de dois bits de acordo com a lógica definida nos comentários abaixo
         if(c1 == '1' and c2 == '1'):
             c1 = '0' ; c2 = '1'
         elif (c1 == '0' and c2 == '1'):
@@ -46,7 +46,7 @@ class Feistel(object):
     # 10 -> 10 #
     # 00 -> 11 #
 
-    def sbox_subs_decipher(self, c1, c2):
+    def sbox_subs_decipher(self, c1, c2): #Similar a sbox_subs, mas para a etapa de decriptação, substituindo os bits de acordo com a lógica inversa
         if(c1 == '1' and c2 == '1'):
             c1 = '0' ; c2 = '0'
         elif (c1 == '0' and c2 == '1'):
